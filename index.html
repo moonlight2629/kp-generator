@@ -204,7 +204,7 @@ html[data-theme="dark"] .btn:hover{background:rgba(255,255,255,.08)}
 р/сч. № 40703810062000001014</textarea></div>
         <div class="field"><label>Адрес</label><textarea class="ta" id="h_adr" rows="2">г. Казань, ул. Г. Тукая,
 д. 91, 3 этаж, офис 303</textarea></div>
-        <div class="field"><label>Контакты (под шапкой)</label><textarea class="ta" id="h_contact" rows="2">+7 927 446 24 64 (Эльвина), e-mail: ukktatstroi@mail.ru</textarea></div>
+        <div class="field"><label>Контакты (под шапкой)</label><textarea class="ta" id="h_contact" rows="2">+7 927 446 24 64, e-mail: ukktatstroi@mail.ru</textarea></div>
       </details>
       <div class="field"><label>Вступительный текст</label><textarea class="ta" id="h_intro" rows="2">ЧОУ ДПО «Учебно-курсовой комбинат ОАО «Татстрой» предлагает пройти обучение по следующим программам сотрудникам Вашей организации:</textarea></div>
     </div>
@@ -419,8 +419,12 @@ function currentManager(){
 }
 function applyManager(){
   const m=currentManager();
-  document.getElementById('h_contact').value=`${m.phone} (${m.name}), e-mail: ${EMAIL}`;
+  document.getElementById('h_contact').value=`${m.phone}, e-mail: ${EMAIL}`;
   try{localStorage.setItem('kp_mgr',document.getElementById('h_mgr').value);}catch(e){}
+}
+// В шапке — только телефон и почта; имя менеджера добавляется только внизу КП.
+function contactFooter(){
+  return `${currentManager().name}, ${H('h_contact')}`;
 }
 function H(id){return document.getElementById(id).value;}
 function selectedBySection(){
@@ -626,9 +630,7 @@ async function _genWordInner(bySec){
 
   // Закрывающий текст + подпись — держатся вместе на одной странице
   kids.push(p('',{before:120,after:0,keep:true}));
-  kids.push(p('Надеемся на плодотворное сотрудничество!',{size:22,before:0,after:40,bold:false,keep:true}));
-  kids.push(p('По вопросам обучения и оформления документов: '+contactLine,{size:20,after:20,keep:true}));
-  kids.push(p(adrLines.join(', '),{size:20,after:80,keep:true}));
+  kids.push(p(contactFooter(),{size:20,after:80,keep:true}));
   kids.push(new Paragraph({spacing:{before:0,after:0},keepLines:true,
     children:[new ImageRun({type:'png',data:signU8,transformation:{width:530,height:165}})]}));
 
@@ -746,9 +748,7 @@ function genPDF(){
 
   // Закрывающий текст + подпись — всегда одним куском
   const closing=[
-    {text:'Надеемся на плодотворное сотрудничество!',fontSize:11,margin:[0,12,0,4]},
-    {text:'По вопросам обучения и оформления документов: '+contactLine,fontSize:9.5,color:'#444',margin:[0,0,0,2]},
-    {text:adrLines.join(', '),fontSize:9.5,color:'#444',margin:[0,0,0,12]},
+    {text:contactFooter(),fontSize:9.5,color:'#444',margin:[0,12,0,12]},
     {image:'signature',width:395}
   ];
 
